@@ -3,17 +3,22 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://luccman.github.io/PawsAndPreferences",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+    
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
+    "gh-pages": "^6.3.0",
     "motion": "^12.18.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
