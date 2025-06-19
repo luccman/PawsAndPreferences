@@ -741,7 +741,7 @@ function App() {
         </span>
       </div>
       {/* Spacer for bottom bar */}
-      <div style={{ height: 3}} />
+      <div style={{ height: 40 }} />
     </div>
   );
 }
