@@ -554,7 +554,7 @@ function App() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            style={{ marginTop: 24, marginBottom: 8 }}
+            style={{ marginTop: 0, marginBottom: 8 }}
           >
             {(() => {
                 const likedCount = ratedCats.filter(cat => cat.decision === 'liked' || cat.decision === 'superliked').length;
