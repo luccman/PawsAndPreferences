@@ -7,7 +7,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import StarIcon from '@mui/icons-material/Star';
 import CopyrightIcon from '@mui/icons-material/Copyright';
-
+import CatSuperPic from './assets/CatSuper.png';
+import CatLoaderGif from './assets/CatLoader.gif';
 
 const CAT_NAMES = [
   "Whiskers", "Mittens", "Shadow", "Simba", "Luna", "Oliver", "Leo", "Bella", "Chloe", "Max",
@@ -41,10 +42,10 @@ function getRandomName(usedNames: Set<string>) {
 }
 
 function getRandomAge() {
-  const years = Math.floor(Math.random() * 6); // 0-5
-  let months = Math.floor(Math.random() * 11) + 1; // 1-11
-  if (years === 5) months = Math.floor(Math.random() * 12); // 0-11 for 5 years
-  if (years === 0 && months < 6) months = 6; // Ensure minimum age is 6 months
+  const years = Math.floor(Math.random() * 6); 
+  let months = Math.floor(Math.random() * 11) + 1; 
+  if (years === 5) months = Math.floor(Math.random() * 12); 
+  if (years === 0 && months < 6) months = 6; 
   return { years, months };
 }
 
@@ -63,7 +64,7 @@ function formatAge(age: { years: number; months: number }) {
 const CatLoader = () => (
   <div className="cat-loader-svg">
     <img
-      src="src/assets/CatLoader.gif"
+      src={CatLoaderGif}
       alt="Loading cat"
     />
   </div>
@@ -145,14 +146,12 @@ function App() {
             setCatImageLoading(prev => ({ ...prev, [cat.id]: true }));
           }
         } catch (error) {
-          // Optionally handle error
         }
       }
     };
 
     loadFirstCat();
 
-    // Clean up blob URLs when component unmounts
     return () => {
       isMounted = false;
       loadingRef.current = false;
@@ -162,7 +161,6 @@ function App() {
         }
       });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSwipe = (direction: 'left' | 'right', cat: Cat) => {
@@ -228,7 +226,7 @@ function App() {
 
   // Helper to get overlay color based on dragX
   function getOverlayColor(x: number) {
-    const max = 200; // max drag for full color
+    const max = 200; 
     if (x > 0) {
       // Green for right
       const alpha = Math.min(Math.abs(x) / max, 1) * 0.5;
@@ -439,7 +437,7 @@ function App() {
                 }}
                 >
                 <motion.img
-                  src="src/assets/CatSuper.png"
+                  src={CatSuperPic}
                   alt="Super Cat"
                   initial={{ y: '100%', opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
