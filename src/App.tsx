@@ -549,7 +549,20 @@ function App() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          
+          {/* Loved Cats Summary Message */}
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            style={{ marginTop: 24, marginBottom: 8 }}
+          >
+            {(() => {
+                const likedCount = ratedCats.filter(cat => cat.decision === 'liked' || cat.decision === 'superliked').length;
+              if (likedCount === 0) return "You didn't like any cats 😿";
+              if (likedCount === 1) return "You loved 1 cat 😸";
+              return `You loved ${likedCount} cats 😻`;
+            })()}
+          </motion.h2>
 
           {/* Super Liked Cats Section */}
           {ratedCats.some(cat => cat.decision === 'superliked') && (
