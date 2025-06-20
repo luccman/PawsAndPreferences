@@ -243,12 +243,12 @@ function App() {
 
   // Helper to get overlay color based on dragX
   function getOverlayColor(x: number) {
-    if (x > 1) {
-      // Always green with 0.5 opacity if swiping right at all
-      return 'rgba(0, 200, 83, 0.5)';
-    } else if (x < -1) {
-      // Always red with 0.5 opacity if swiping left at all
-      return 'rgba(244, 67, 54, 0.5)';
+    if (x > 50) {
+      // Always green with 0.5 opacity if swiping right
+      return 'rgba(0, 200, 83, 0.7)';
+    } else if (x < -50) {
+      // Always red with 0.5 opacity if swiping left
+      return 'rgba(244, 67, 54, 0.7)';
     }
     return 'rgba(0,0,0,0)';
   }
