@@ -4,6 +4,7 @@ body {
   background: #1a6666;
   color: rgb(255, 255, 255);
   text-align: center;
+  overflow: auto !important;
 }
 
 .app {
@@ -15,7 +16,7 @@ body {
   box-sizing: border-box;
   background: rgba(26, 102, 102, 1);
   width: 100%;
-  overflow:hidden;
+  overflow: auto;
 }
 
 .card-stack {
@@ -235,8 +236,9 @@ body {
 .drag-overlay {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 6;
   pointer-events: none;
   border-radius: 16px;
   transition: background 0.2s;
 }
+

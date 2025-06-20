@@ -42,10 +42,10 @@ function getRandomName(usedNames: Set<string>) {
 }
 
 function getRandomAge() {
-  const years = Math.floor(Math.random() * 6); 
-  let months = Math.floor(Math.random() * 11) + 1; 
-  if (years === 5) months = Math.floor(Math.random() * 12); 
-  if (years === 0 && months < 6) months = 6; 
+  const years = Math.floor(Math.random() * 6);
+  let months = Math.floor(Math.random() * 11) + 1;
+  if (years === 5) months = Math.floor(Math.random() * 12);
+  if (years === 0 && months < 6) months = 6;
   return { years, months };
 }
 
@@ -86,7 +86,7 @@ function CatInfoSkeleton() {
 
 function App() {
   const [cats, setCats] = useState<Cat[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [ratedCats, setRatedCats] = useState<RatedCat[]>([]);
   const [current, setCurrent] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -96,13 +96,13 @@ function App() {
   const [showExitOverlay, setShowExitOverlay] = useState(false);
   const [exitOverlayColor, setExitOverlayColor] = useState<string>('rgba(0,0,0,0)');
   const [superLikes, setSuperLikes] = useState(2);
-  const [history, setHistory] = useState<{cat: Cat, decision: 'liked'|'disliked'|null}[]>([]);
+  const [history, setHistory] = useState<{ cat: Cat, decision: 'liked' | 'disliked' | null }[]>([]);
   const [pendingSummary, setPendingSummary] = useState(false);
   const [lastAction, setLastAction] = useState<'swipe' | 'undo' | null>(null);
   const [showSuperLikeAnimation, setShowSuperLikeAnimation] = useState(false);
   const loadingRef = useRef(false);
   const usedNames = useRef<Set<string>>(new Set());
-  
+
 
   // Fetch a single cat
   const fetchCat = async (index: number): Promise<Cat> => {
@@ -177,7 +177,7 @@ function App() {
     const next = current + 1;
     if (next >= CAT_COUNT) {
       setPendingSummary(true);
-    setCurrent(next);
+      setCurrent(next);
     } else if (next >= cats.length) {
       setCurrent(next);
       setLoading(true);
@@ -207,7 +207,10 @@ function App() {
   const handleButtonSwipe = (decision: 'liked' | 'disliked' | 'superliked') => {
     if (showSuperLikeAnimation) return;
     if (!currentCat || isCurrentCatLoading) return;
+
+    // Set overlay color based on decision
     if (decision === 'superliked' && superLikes > 0) {
+      setShowExitOverlay(true);
       setSuperLikes(prev => prev - 1);
       setShowSuperLikeAnimation(true);
       setTimeout(() => {
@@ -216,25 +219,36 @@ function App() {
         setHistory(prev => [...prev, { cat: currentCat, decision: 'liked' }]);
         setCurrent(prev => prev + 1);
         setShowSuperLikeAnimation(false);
+        setShowExitOverlay(false);
+        setExitOverlayColor('rgba(0,0,0,0)');
       }, 2200);
     } else if (decision === 'liked') {
-      handleSwipe('right', currentCat);
+      setExitOverlayColor('rgba(0, 200, 83, 0.5)'); // Green overlay for like
+      setShowExitOverlay(true);
+      setTimeout(() => {
+        handleSwipe('right', currentCat);
+        setShowExitOverlay(false);
+        setExitOverlayColor('rgba(0,0,0,0)');
+      }, 350);
     } else if (decision === 'disliked') {
-      handleSwipe('left', currentCat);
+      setExitOverlayColor('rgba(238, 21, 5, 0.5)'); // Red overlay for dislike
+      setShowExitOverlay(true);
+      setTimeout(() => {
+        handleSwipe('left', currentCat);
+        setShowExitOverlay(false);
+        setExitOverlayColor('rgba(0,0,0,0)');
+      }, 350);
     }
   };
 
   // Helper to get overlay color based on dragX
   function getOverlayColor(x: number) {
-    const max = 200; 
-    if (x > 0) {
-      // Green for right
-      const alpha = Math.min(Math.abs(x) / max, 1) * 0.5;
-      return `rgba(0, 200, 83, ${alpha})`;
-    } else if (x < 0) {
-      // Red for left
-      const alpha = Math.min(Math.abs(x) / max, 1) * 0.5;
-      return `rgba(244, 67, 54, ${alpha})`;
+    if (x > 1) {
+      // Always green with 0.5 opacity if swiping right at all
+      return 'rgba(0, 200, 83, 0.5)';
+    } else if (x < -1) {
+      // Always red with 0.5 opacity if swiping left at all
+      return 'rgba(244, 67, 54, 0.5)';
     }
     return 'rgba(0,0,0,0)';
   }
@@ -278,6 +292,22 @@ function App() {
     setSuperLikes(INITIAL_SUPER_LIKES - ratedCats.filter(cat => cat.decision === 'superliked').length);
   }, [ratedCats]);
 
+  // Lock scroll during swiping, unlock during summary
+  useEffect(() => {
+    if (!finished) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    }
+    // Clean up on unmount
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, [finished]);
+
   return (
     <div className="app">
       {/* Top Bar */}
@@ -296,7 +326,8 @@ function App() {
         }}
       >
         <h1 style={{
-          color: 'rgba(15, 3, 38, 1)',}}>
+          color: 'rgba(15, 3, 38, 1)',
+        }}>
           Paws & Preferences🐾
         </h1>
       </div>
@@ -331,8 +362,8 @@ function App() {
                   custom={{ lastAction, lastSwipe }}
                   onExitComplete={() => {
                     if (pendingSummary) {
-                      setTimeout(() => setFinished(true), 200);
-                      setPendingSummary(false);
+                      setFinished(true);
+                      setTimeout(() => setPendingSummary(false), 200);
                     }
                   }}
                 >
@@ -352,11 +383,11 @@ function App() {
                         rotate: dragX / 30,
                         filter: showSuperLikeAnimation ? 'blur(8px)' : 'none'
                       }}
-                      onDrag={(e, info) => {
+                      onDrag={(_e, info) => {
                         if (showSuperLikeAnimation) return;
                         setDragX(info.offset.x);
                       }}
-                      onDragEnd={(e, info) => {
+                      onDragEnd={(_e, info) => {
                         if (showSuperLikeAnimation) return;
                         setDragX(0);
                         if (info.offset.x > 100 && !isCurrentCatLoading) handleSwipe('right', currentCat);
@@ -401,7 +432,7 @@ function App() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                {current >= cats.length && cats.length > 0 && (
+                {current >= cats.length && cats.length > 0 && !pendingSummary && (
                   <motion.div
                     className="cat-card skeleton-card"
                     initial={{ opacity: 0 }}
@@ -417,7 +448,7 @@ function App() {
 
             {/* SUPER LIKE overlay */}
             {showSuperLikeAnimation && (
-                <motion.div
+              <motion.div
                 className="superlike-overlay"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -432,10 +463,10 @@ function App() {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backdropFilter: 'blur(8px)',
+                  //backdropFilter: 'blur(8px)',
                   backgroundColor: 'rgba(0,0,0,0.3)',
                 }}
-                >
+              >
                 <motion.img
                   src={CatSuperPic}
                   alt="Super Cat"
@@ -443,9 +474,9 @@ function App() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.5 }}
                   style={{
-                  width: '80px',
-                  height: '80px',
-                  filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.45)) drop-shadow(0 2px 4px rgba(0,0,0,0.25))',
+                    width: '80px',
+                    height: '80px',
+                    filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.45)) drop-shadow(0 2px 4px rgba(0,0,0,0.25))',
                   }}
                 />
                 <motion.div
@@ -464,10 +495,10 @@ function App() {
                 >
                   LIKED
                 </motion.div>
-                </motion.div>
+              </motion.div>
             )}
           </div>
-          
+
           <Stack
             direction="row"
             spacing={2}
@@ -475,7 +506,7 @@ function App() {
             sx={{
               mt: { xs: 3, sm: 6, md: 9 }, // Responsive margin top: small on mobile, large on desktop
             }}
-            >
+          >
             <Tooltip title="Undo">
               <IconButton
                 color="warning"
@@ -555,7 +586,7 @@ function App() {
             style={{ marginTop: 0, marginBottom: 8 }}
           >
             {(() => {
-                const likedCount = ratedCats.filter(cat => cat.decision === 'liked' || cat.decision === 'superliked').length;
+              const likedCount = ratedCats.filter(cat => cat.decision === 'liked' || cat.decision === 'superliked').length;
               if (likedCount === 0) return "You didn't like any cats 😿";
               if (likedCount === 1) return "You loved 1 cat 😸";
               return `You loved ${likedCount} cats 😻`;
@@ -691,7 +722,10 @@ function App() {
           >
             <Button
               variant="contained"
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                window.scrollTo(0, 0);
+                window.location.reload();
+              }}
               sx={{
                 mt: 3,
                 backgroundColor: '#FFE1A8',
