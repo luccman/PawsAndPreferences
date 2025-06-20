@@ -221,7 +221,7 @@ function App() {
         setShowSuperLikeAnimation(false);
         setShowExitOverlay(false);
         setExitOverlayColor('rgba(0,0,0,0)');
-      }, 2200);
+      }, 1700);
     } else if (decision === 'liked') {
       setExitOverlayColor('rgba(0, 200, 83, 0.5)'); // Green overlay for like
       setShowExitOverlay(true);
@@ -229,7 +229,7 @@ function App() {
         handleSwipe('right', currentCat);
         setShowExitOverlay(false);
         setExitOverlayColor('rgba(0,0,0,0)');
-      }, 350);
+      }, 200);
     } else if (decision === 'disliked') {
       setExitOverlayColor('rgba(238, 21, 5, 0.5)'); // Red overlay for dislike
       setShowExitOverlay(true);
@@ -237,7 +237,7 @@ function App() {
         handleSwipe('left', currentCat);
         setShowExitOverlay(false);
         setExitOverlayColor('rgba(0,0,0,0)');
-      }, 350);
+      }, 200);
     }
   };
 
