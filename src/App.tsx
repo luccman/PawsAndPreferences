@@ -217,7 +217,11 @@ function App() {
         setLastSwipe('right');
         setRatedCats(prev => [...prev, { ...currentCat, decision: 'superliked' }]);
         setHistory(prev => [...prev, { cat: currentCat, decision: 'liked' }]);
-        setCurrent(prev => prev + 1);
+        const next = current + 1;
+        setCurrent(next);
+        if (next >= CAT_COUNT) {
+          setPendingSummary(true);
+        }
         setShowSuperLikeAnimation(false);
         setShowExitOverlay(false);
         setExitOverlayColor('rgba(0,0,0,0)');
@@ -601,7 +605,7 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, delay: 0.1 }}
               >
-                Super Liked Cats <span style={{ color: '#ffb300' }}>&lt;3</span>
+                Super Liked Cats 💜
               </motion.h3>
               <div className="super-liked-gallery">
                 {ratedCats.filter(cat => cat.decision === 'superliked').map((cat, i) => (
